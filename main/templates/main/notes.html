@@ -1,0 +1,79 @@
+{% extends 'main/base.html' %} {% load crispy_forms_tags %} {% block content %}
+<style>
+    .noteDiv {
+        border: 1px black;
+        padding: 10px;
+        margin: 10px;
+        border-style: dotted;
+        border-radius: 10px;
+    }
+</style>
+<h2 style="text-align: center">Notes Application, where you can add, edit and delete notes</h2>
+<div class="container-fluid" style="margin: 40px">
+    <div class="row">
+        <div class="col-5">
+            <h5>Add a Note</h5>
+            <form action="/notes" method="post">
+                {% csrf_token %} {{ form | crispy }} {% if error %}
+                <p>{{ error }}</p>
+                {% endif %}
+                <input type="integer" name="id" value="{{ id }}" hidden />
+                <input type="submit" class="btn btn-success" value="Add Note" name="operation" />
+                <input type="submit" class="btn btn-warning" value="Update Note" name="operation" />
+            </form>
+        </div>
+        <div class="col-6">
+            {% if notes %}
+            <h5>Past Notes</h5>
+            <div>
+                {% for note in notes %}
+                <div class="noteDiv">
+                    <div>
+                        <h4 style="font-weight: 400; display: inline; float: left">
+                            Title: {{ note.title }}
+                        </h4>
+                        <span style="float: right; font-style: italic">{{ note.date.date }}</span>
+                        <div style="clear: both"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-9">
+                            <p>Content: {{ note.content }}</p>
+                        </div>
+                        <div class="col-3">
+                            <form
+                                action="/notes/{{ note.id }}"
+                                method="post"
+                                style="display: inline"
+                            >
+                                {% csrf_token %}
+                                <input
+                                    type="submit"
+                                    class="btn btn-danger"
+                                    value="Delete"
+                                    name="operation"
+                                />
+                            </form>
+                            <form
+                                action="/notes/{{ note.id }}/edit"
+                                method="get"
+                                style="display: inline"
+                            >
+                                {% csrf_token %}
+                                <input
+                                    type="submit"
+                                    class="btn btn-primary"
+                                    value="Edit"
+                                    name="operation"
+                                />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<a href="/">Home</a>
+{% endblock %}
